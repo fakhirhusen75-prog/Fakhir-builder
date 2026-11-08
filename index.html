@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Question Paper Generator</title>
+    <style>
+        /* --- GLOBAL & APP STYLING --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .app-panel {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2b6cb0;
+        }
+        .app-panel h3 { margin-top: 0; color: #2b6cb0; }
+        button {
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-right: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #1a446c; }
+        button.print-btn { background-color: #2f855a; }
+        button.print-btn:hover { background-color: #22543d; }
+        button.delete-btn { background-color: #c53030; padding: 5px 10px; font-size: 12px; }
+        button.delete-btn:hover { background-color: #9b2c2c; }
+
+        /* --- EXAM PAPER LAYOUT (A4 Grounding) --- */
+        .exam-paper {
+            border: 2px solid #000;
+            padding: 20px;
+            min-height: 500px;
+            background: #fff;
+        }
+        .exam-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            border-bottom: 3px double #000;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .header-item {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .editable-input {
+            border: none;
+            border-bottom: 1px dashed #777;
+            width: 60%;
+            font-size: 16px;
+            outline: none;
+        }
+        .question-list {
+            margin-top: 20px;
+        }
+        .question-item {
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        .question-text {
+            font-weight: bold;
+            width: 85%;
+            font-size: 16px;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+            padding-left: 20px;
+        }
+        .option-field {
+            width: 80%;
+        }
+
+        /* --- CRITICAL PRINT CSS (Hides App UI on PDF export) --- */
+        @media print {
+            body { background: none; padding: 0; }
+            .app-panel, button, .delete-btn { display: none !important; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .exam-paper { border: none; padding: 0; }
+            .editable-input { border-bottom: none; }
+            input[type="text"] { border-bottom: none; background: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- Control Dashboard Panel -->
+    <div class="app-panel">
+        <h3>Builder Controls</h3>
+        <p>Fill out the fields below. Click buttons to dynamically inject pre-formatted questions.</p>
+        <button onclick="addMultipleChoice()">+ Add Multiple Choice</button>
+        <button onclick="addFillInBlanks()">+ Add Fill in the Blanks</button>
+        <button class="print-btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
+    </div>
+
+    <!-- Live Exam Paper Structure -->
+    <div class="exam-paper">
+        
+        <!-- Standardized Exam Header -->
+        <div class="exam-header">
+            <div class="header-item">School: <input type="text" class="editable-input" value="KRG Secondary School"></div>
+            <div class="header-item">Subject: <input type="text" class="editable-input" value="English Exam"></div>
+            <div class="header-item">Date: <input type="text" class="editable-input" value="2026 / ___ / ___"></div>
+            <div class="header-item">Class: <input type="text" class="editable-input" value="Grade 10"></div>
+            <div class="header-item">Student Name: <input type="text" class="editable-input" style="width:70%;" placeholder=".........................................."></div>
+            <div class="header-item">Time Allowed: <input type="text" class="editable-input" value="2 Hours"></div>
+        </div>
+
+        <!-- Dynamic Output Container -->
+        <div id="examQuestions" class="question-list">
+            <!-- Programmatically generated question elements load here -->
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let questionCounter = 0;
+
+    // Generates a unique structural item wrapper with a print-hidden delete button
+    function createQuestionWrapper() {
+        questionCounter++;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'question-item';
+        wrapper.id = 'q-block-' + questionCounter;
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'delete-btn';
+        deleteBtn.innerText = 'Delete';
+        deleteBtn.style.float = 'right';
+        deleteBtn.onclick = function() { wrapper.remove(); reindexQuestions(); };
+        
+        wrapper.appendChild(deleteBtn);
+        return wrapper;
+    }
+
+    // Dynamic Template: Multiple Choice (A, B, C, D)
+    function addMultipleChoice() {
+        const container = document.getElementById('examQuestions');
+        const wrapper = createQuestionWrapper();
+        
+        wrapper.innerHTML += `
+            <div class="q-number-label" style="display:inline; font-weight:bold;">Q: </div>
+            <input type="text" class="editable-input question-text" placeholder="Type your multiple choice question here...">
+            <div class="options-grid">
+                <div>A) <input type="text" class="editable-input option-field" placeholder="Option A"></div>
+                <div>B) <input type="text" class="editable-input option-field" placeholder="Option B"></div>
+                <div>C) <input type="text" class="editable-input option-field" placeholder="Option C"></div>
+                <div>D) <input type="text" class="editable-input option-field" placeholder="Option D"></div>
+            </div>
+        `;
+        
+        container.appendChild(wrapper);
+        reindexQuestions();
+    }
+
+    // Dynamic Template: Fill in the Blanks
+    function addFillInBlanks() {
+        const container = document.getElementById('examQuestions');
+        const wrapper = createQuestionWrapper();
+        
+        wrapper.innerHTML += `
+            <div class="q-number-label" style="display:inline; font-weight:bold;">Q: </div>
+            <input type="text" class="editable-input question-text" style="width:80%;" placeholder="Type statement here. Use _________ for blanks.">
+        `;
+        
+        container.appendChild(wrapper);
+        reindexQuestions();
+    }
+
+    // Loops through all current items to dynamically keep standard sequential ordering intact
+    function reindexQuestions() {
+        const labels = document.querySelectorAll('.q-number-label');
+        labels.forEach((label, index) => {
+            label.innerText = (index + 1) + ". ";
+        });
+    }
+</script>
+
+</body>
+</html>
