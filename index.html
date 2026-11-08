@@ -3,206 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Exam Question Paper Generator</title>
+    <title>Professional Question Paper Generator</title>
     <style>
-        /* --- GLOBAL & APP STYLING --- */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            margin: 0;
-            padding: 20px;
-            color: #333;
+        /* --- CORE CONFIG & RESET --- */
+        :root {
+            --primary: #2b6cb0;
+            --primary-hover: #1a446c;
+            --success: #2f855a;
+            --danger: #e53e3e;
+            --bg-gray: #f7fafc;
+            --panel-bg: #ffffff;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .app-panel {
-            background: #eef2f7;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 30px;
-            border-left: 5px solid #2b6cb0;
-        }
-        .app-panel h3 { margin-top: 0; color: #2b6cb0; }
-        button {
-            background-color: #2b6cb0;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            margin-right: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-        button:hover { background-color: #1a446c; }
-        button.print-btn { background-color: #2f855a; }
-        button.print-btn:hover { background-color: #22543d; }
-        button.delete-btn { background-color: #c53030; padding: 5px 10px; font-size: 12px; }
-        button.delete-btn:hover { background-color: #9b2c2c; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-gray); margin: 0; padding: 15px; color: #2d3748; }
 
-        /* --- EXAM PAPER LAYOUT (A4 Grounding) --- */
-        .exam-paper {
-            border: 2px solid #000;
+        /* --- CONTROL PANEL DESIGN --- */
+        .admin-panel {
+            max-width: 850px;
+            margin: 0 auto 20px auto;
+            background: var(--panel-bg);
             padding: 20px;
-            min-height: 500px;
-            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary);
         }
+        .admin-panel h2 { margin: 0 0 10px 0; font-size: 20px; color: var(--primary); }
+        .control-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        
+        /* Buttons */
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-add { background-color: #ebf8ff; color: var(--primary); border: 1px solid #bee3f8; }
+        .btn-add:hover { background-color: #e2e8f0; }
+        .btn-action { background-color: var(--primary); color: white; }
+        .btn-action:hover { background-color: var(--primary-hover); }
+        .btn-print { background-color: var(--success); color: white; font-size: 14px; }
+        .btn-delete { background-color: transparent; color: var(--danger); padding: 4px 8px; font-size: 12px; }
+        .btn-delete:hover { background-color: #fff5f5; border-radius: 4px; }
+
+        /* Lang Toggles */
+        .lang-switch { background: #edf2f7; padding: 4px; border-radius: 8px; display: inline-flex; }
+        .lang-btn { background: transparent; color: #4a5568; padding: 6px 12px; border-radius: 6px; }
+        .lang-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* --- EXAM LAYOUT FRAME --- */
+        .exam-sheet {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            min-height: 1000px;
+        }
+        
+        /* Exam Header Block */
         .exam-header {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 25px;
+        }
+        .header-top-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #cbd5e0;
+        }
+        .header-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            border-bottom: 3px double #000;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
+            gap: 12px;
         }
-        .header-item {
-            font-size: 16px;
-            font-weight: 500;
-        }
-        .editable-input {
+        .header-field { font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        
+        /* Inputs styling inside exam */
+        .paper-input {
             border: none;
-            border-bottom: 1px dashed #777;
-            width: 60%;
-            font-size: 16px;
+            border-bottom: 1px dashed #a0aec0;
             outline: none;
+            font-size: 15px;
+            padding: 2px 4px;
+            width: 100%;
+            background: transparent;
         }
-        .question-list {
-            margin-top: 20px;
-        }
-        .question-item {
-            margin-bottom: 20px;
+        .paper-input:focus { border-bottom-color: var(--primary); background-color: #f7fafc; }
+
+        /* --- DYNAMIC QUESTION BLOCKS --- */
+        .questions-container { margin-top: 20px; }
+        .q-block {
+            margin-bottom: 25px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid transparent;
             position: relative;
-            padding-bottom: 10px;
         }
-        .question-text {
-            font-weight: bold;
-            width: 85%;
-            font-size: 16px;
-        }
+        .q-block:hover { border-color: #e2e8f0; background-color: #fafafa; }
+        .q-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .q-num { font-weight: bold; font-size: 16px; min-width: 25px; }
+        
+        /* Layout Variations per Question Type */
         .options-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
+            padding-left: 25px;
             margin-top: 8px;
-            padding-left: 20px;
         }
-        .option-field {
-            width: 80%;
-        }
+        .tf-container { display: flex; gap: 20px; padding-left: 25px; margin-top: 5px; font-weight: 500; }
+        .sa-lines { margin-top: 10px; padding-left: 25px; border-left: 2px solid #cbd5e0; height: 45px; }
 
-        /* --- CRITICAL PRINT CSS (Hides App UI on PDF export) --- */
+        /* --- RTL SUPPORT (Kurdish / Arabic) --- */
+        .rtl { direction: rtl; text-align: right; }
+        .rtl .options-grid { padding-left: 0; padding-right: 25px; }
+        .rtl .tf-container { padding-left: 0; padding-right: 25px; }
+        .rtl .sa-lines { padding-left: 0; padding-right: 25px; border-left: none; border-right: 2px solid #cbd5e0; }
+
+        /* --- PRINT MEDIA SYSTEM --- */
         @media print {
-            body { background: none; padding: 0; }
-            .app-panel, button, .delete-btn { display: none !important; }
-            .container { box-shadow: none; padding: 0; max-width: 100%; }
-            .exam-paper { border: none; padding: 0; }
-            .editable-input { border-bottom: none; }
-            input[type="text"] { border-bottom: none; background: transparent; }
+            body { background: transparent; padding: 0; color: #000; }
+            .admin-panel, button, .btn-delete { display: none !important; }
+            .exam-sheet { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            .paper-input { border-bottom: none; }
+            .q-block:hover { background: transparent; }
+            input::placeholder { color: transparent; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-
-    <!-- Control Dashboard Panel -->
-    <div class="app-panel">
-        <h3>Builder Controls</h3>
-        <p>Fill out the fields below. Click buttons to dynamically inject pre-formatted questions.</p>
-        <button onclick="addMultipleChoice()">+ Add Multiple Choice</button>
-        <button onclick="addFillInBlanks()">+ Add Fill in the Blanks</button>
-        <button class="print-btn" onclick="window.print()">🖨️ Save as PDF / Print</button>
-    </div>
-
-    <!-- Live Exam Paper Structure -->
-    <div class="exam-paper">
+    <!-- Builder Setup Controls -->
+    <div class="admin-panel">
+        <h2>🛠️ Exam Template Controls</h2>
         
-        <!-- Standardized Exam Header -->
-        <div class="exam-header">
-            <div class="header-item">School: <input type="text" class="editable-input" value="KRG Secondary School"></div>
-            <div class="header-item">Subject: <input type="text" class="editable-input" value="English Exam"></div>
-            <div class="header-item">Date: <input type="text" class="editable-input" value="2026 / ___ / ___"></div>
-            <div class="header-item">Class: <input type="text" class="editable-input" value="Grade 10"></div>
-            <div class="header-item">Student Name: <input type="text" class="editable-input" style="width:70%;" placeholder=".........................................."></div>
-            <div class="header-item">Time Allowed: <input type="text" class="editable-input" value="2 Hours"></div>
+        <div class="control-group">
+            <div class="lang-switch">
+                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">English (LTR)</button>
+                <button class="lang-btn" id="btn-rtl" onclick="setLanguage('rtl')">Kurdish / کوردی (RTL)</button>
+            </div>
         </div>
 
-        <!-- Dynamic Output Container -->
-        <div id="examQuestions" class="question-list">
-            <!-- Programmatically generated question elements load here -->
+        <div class="control-group">
+            <button class="btn-add" onclick="addQuestion('mcq')">➕ Multiple Choice</button>
+            <button class="btn-add" onclick="addQuestion('blank')">✏️ Fill in Blanks</button>
+            <button class="btn-add" onclick="addQuestion('tf')">✔️ True / False</button>
+            <button class="btn-add" onclick="addQuestion('short')">📝 Short Answer</button>
         </div>
+
+        <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
+            <button class="btn-print" onclick="window.print()">🖨️ Generate & Save Paper (PDF)</button>
+        </div>
+    </div>
+
+    <!-- Live Paper View Container -->
+    <div class="exam-sheet" id="examSheet">
+        
+        <!-- Standard Exam Header Meta Structure -->
+        <div class="exam-header">
+            <div class="header-top-title" id="txt-header-title">In the Name of God / بسم الله الرحمن الرحيم</div>
+            <div class="header-grid">
+                <div class="header-field">School: <input type="text" class="paper-input" value="KRG Secondary School"></div>
+                <div class="header-field">Subject: <input type="text" class="paper-input" value="English Exam"></div>
+                <div class="header-field">Date: <input type="text" class="paper-input" placeholder="2026 / ___ / ___"></div>
+                <div class="header-field">Class / Stage: <input type="text" class="paper-input" value="Grade 10"></div>
+                <div class="header-field" style="grid-column: span 2;">Student Name: <input type="text" class="paper-input" placeholder="................................................................................"></div>
+                <div class="header-field">Time: <input type="text" class="paper-input" value="2 Hours"></div>
+                <div class="header-field">Mark / Grade: <input type="text" class="paper-input" placeholder="_______ / 50"></div>
+            </div>
+        </div>
+
+        <!-- Render Target for Injected Elements -->
+        <div class="questions-container" id="questionsContainer"></div>
 
     </div>
-</div>
 
 <script>
-    let questionCounter = 0;
+    let qCount = 0;
 
-    // Generates a unique structural item wrapper with a print-hidden delete button
-    function createQuestionWrapper() {
-        questionCounter++;
-        const wrapper = document.createElement('div');
-        wrapper.className = 'question-item';
-        wrapper.id = 'q-block-' + questionCounter;
-        
-        const deleteBtn = document.createElement('button');
-        deleteBtn.className = 'delete-btn';
-        deleteBtn.innerText = 'Delete';
-        deleteBtn.style.float = 'right';
-        deleteBtn.onclick = function() { wrapper.remove(); reindexQuestions(); };
-        
-        wrapper.appendChild(deleteBtn);
-        return wrapper;
+    // Changes layout structure between English Left-to-Right and Kurdish Right-to-Left directions
+    function setLanguage(mode) {
+        const sheet = document.getElementById('examSheet');
+        document.getElementById('btn-en').classList.remove('active');
+        document.getElementById('btn-rtl').classList.remove('active');
+
+        if(mode === 'rtl') {
+            sheet.classList.add('rtl');
+            document.getElementById('btn-rtl').classList.add('active');
+            document.getElementById('txt-header-title').innerText = "بسم الله الرحمن الرحيم";
+        } else {
+            sheet.classList.remove('rtl');
+            document.getElementById('btn-en').classList.add('active');
+            document.getElementById('txt-header-title').innerText = "In the Name of God / بسم الله الرحمن الرحيم";
+        }
     }
 
-    // Dynamic Template: Multiple Choice (A, B, C, D)
-    function addMultipleChoice() {
-        const container = document.getElementById('examQuestions');
-        const wrapper = createQuestionWrapper();
+    // Handles generation of different structural input templates 
+    function addQuestion(type) {
+        qCount++;
+        const container = document.getElementById('questionsContainer');
         
-        wrapper.innerHTML += `
-            <div class="q-number-label" style="display:inline; font-weight:bold;">Q: </div>
-            <input type="text" class="editable-input question-text" placeholder="Type your multiple choice question here...">
-            <div class="options-grid">
-                <div>A) <input type="text" class="editable-input option-field" placeholder="Option A"></div>
-                <div>B) <input type="text" class="editable-input option-field" placeholder="Option B"></div>
-                <div>C) <input type="text" class="editable-input option-field" placeholder="Option C"></div>
-                <div>D) <input type="text" class="editable-input option-field" placeholder="Option D"></div>
+        const qBlock = document.createElement('div');
+        qBlock.className = 'q-block';
+        qBlock.id = 'q-' + qCount;
+
+        // Base structural header row containing numeric sequence indicators and actions
+        let innerHTML = `
+            <div class="q-row">
+                <span class="q-num class-index-label"></span>
+                <input type="text" class="paper-input" style="font-weight: bold;" placeholder="Click here to type question text...">
+                <button class="btn-delete" onclick="deleteQuestion('${qBlock.id}')">Delete</button>
             </div>
         `;
-        
-        container.appendChild(wrapper);
-        reindexQuestions();
-    }
 
-    // Dynamic Template: Fill in the Blanks
-    function addFillInBlanks() {
-        const container = document.getElementById('examQuestions');
-        const wrapper = createQuestionWrapper();
-        
-        wrapper.innerHTML += `
-            <div class="q-number-label" style="display:inline; font-weight:bold;">Q: </div>
-            <input type="text" class="editable-input question-text" style="width:80%;" placeholder="Type statement here. Use _________ for blanks.">
-        `;
-        
-        container.appendChild(wrapper);
-        reindexQuestions();
-    }
-
-    // Loops through all current items to dynamically keep standard sequential ordering intact
-    function reindexQuestions() {
-        const labels = document.querySelectorAll('.q-number-label');
-        labels.forEach((label, index) => {
-            label.innerText = (index + 1) + ". ";
-        });
-    }
-</script>
-
-</body>
-</html>
+        // Inject configuration blocks specific to selection data model
