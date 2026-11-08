@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Professional Question Paper Generator</title>
+    <title>Compact Question Paper Generator</title>
     <style>
         /* --- CORE CONFIG & RESET --- */
         :root {
@@ -15,123 +15,127 @@
             --panel-bg: #ffffff;
         }
         * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-gray); margin: 0; padding: 15px; color: #2d3748; }
+        body { background-color: var(--bg-gray); margin: 0; padding: 10px; color: #2d3748; }
 
         /* --- CONTROL PANEL DESIGN --- */
         .admin-panel {
             max-width: 850px;
-            margin: 0 auto 20px auto;
+            margin: 0 auto 10px auto;
             background: var(--panel-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            border-top: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border-top: 3px solid var(--primary);
         }
-        .admin-panel h2 { margin: 0 0 10px 0; font-size: 20px; color: var(--primary); }
-        .control-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 15px; }
+        .admin-panel h2 { margin: 0 0 8px 0; font-size: 16px; color: var(--primary); }
+        .control-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
         
         /* Buttons */
         button {
-            padding: 10px 14px;
+            padding: 6px 10px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 13px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 12px;
         }
         .btn-add { background-color: #ebf8ff; color: var(--primary); border: 1px solid #bee3f8; }
         .btn-add:hover { background-color: #e2e8f0; }
-        .btn-action { background-color: var(--primary); color: white; }
-        .btn-action:hover { background-color: var(--primary-hover); }
-        .btn-print { background-color: var(--success); color: white; font-size: 14px; }
-        .btn-delete { background-color: transparent; color: var(--danger); padding: 4px 8px; font-size: 12px; }
-        .btn-delete:hover { background-color: #fff5f5; border-radius: 4px; }
+        .btn-print { background-color: var(--success); color: white; }
+        .btn-delete { background-color: transparent; color: var(--danger); padding: 2px 6px; font-size: 11px; margin-left: auto; }
+        .btn-delete:hover { background-color: #fff5f5; border-radius: 3px; }
 
         /* Lang Toggles */
-        .lang-switch { background: #edf2f7; padding: 4px; border-radius: 8px; display: inline-flex; }
-        .lang-btn { background: transparent; color: #4a5568; padding: 6px 12px; border-radius: 6px; }
-        .lang-btn.active { background: white; color: var(--primary); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .lang-switch { background: #edf2f7; padding: 3px; border-radius: 6px; display: inline-flex; }
+        .lang-btn { background: transparent; color: #4a5568; padding: 4px 8px; border-radius: 4px; }
+        .lang-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-        /* --- EXAM LAYOUT FRAME --- */
+        /* --- EXAM LAYOUT FRAME (COMPACT) --- */
         .exam-sheet {
             max-width: 850px;
             margin: 0 auto;
             background: white;
-            padding: 40px;
+            padding: 20px;
             border-radius: 4px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #cbd5e0;
             min-height: 1000px;
         }
         
-        /* Exam Header Block */
+        /* Tight Exam Header Block */
         .exam-header {
-            border: 2px solid #000;
-            padding: 15px;
-            margin-bottom: 25px;
+            border: 1px solid #000;
+            padding: 8px;
+            margin-bottom: 12px;
         }
         .header-top-title {
             text-align: center;
             font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #cbd5e0;
+            font-size: 15px;
+            margin-bottom: 6px;
+            padding-bottom: 4px;
+            border-bottom: 1px solid #000;
         }
         .header-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
+            gap: 6px;
         }
-        .header-field { font-size: 15px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .header-field { font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         
-        /* Inputs styling inside exam */
+        /* Paper Inputs */
         .paper-input {
             border: none;
-            border-bottom: 1px dashed #a0aec0;
+            border-bottom: 1px dashed #cbd5e0;
             outline: none;
-            font-size: 15px;
-            padding: 2px 4px;
+            font-size: 14px;
+            padding: 1px 2px;
             width: 100%;
             background: transparent;
         }
-        .paper-input:focus { border-bottom-color: var(--primary); background-color: #f7fafc; }
 
-        /* --- DYNAMIC QUESTION BLOCKS --- */
-        .questions-container { margin-top: 20px; }
+        /* --- ULTRA-TIGHT QUESTION BLOCKS --- */
+        .questions-container { margin-top: 10px; }
         .q-block {
-            margin-bottom: 25px;
-            padding: 10px;
-            border-radius: 6px;
+            margin-bottom: 6px; /* Very narrow gap between questions */
+            padding: 2px 4px;
+            border-radius: 4px;
             border: 1px solid transparent;
-            position: relative;
         }
-        .q-block:hover { border-color: #e2e8f0; background-color: #fafafa; }
-        .q-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .q-num { font-weight: bold; font-size: 16px; min-width: 25px; }
+        .q-block:hover { border-color: #edf2f7; background-color: #fafafa; }
+        .q-row { display: flex; align-items: center; gap: 6px; }
+        .q-num { font-weight: bold; font-size: 14px; min-width: 20px; }
         
-        /* Layout Variations per Question Type */
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding-left: 25px;
-            margin-top: 8px;
+        /* Horizontal Inline Choices System */
+        .choices-inline {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px; /* Spacing between option A, B, C, D */
+            padding-left: 20px;
+            margin-top: 2px;
         }
-        .tf-container { display: flex; gap: 20px; padding-left: 25px; margin-top: 5px; font-weight: 500; }
-        .sa-lines { margin-top: 10px; padding-left: 25px; border-left: 2px solid #cbd5e0; height: 45px; }
+        .choice-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 14px;
+        }
+        .choice-input {
+            width: 110px; /* Clean compact length for option fields */
+        }
+        
+        .tf-container { display: flex; gap: 15px; padding-left: 20px; margin-top: 2px; font-size: 14px; }
+        .sa-lines { margin-top: 4px; padding-left: 20px; border-left: 1px solid #cbd5e0; height: 25px; }
 
-        /* --- RTL SUPPORT (Kurdish / Arabic) --- */
+        /* --- RTL DIRECTION COUPLING --- */
         .rtl { direction: rtl; text-align: right; }
-        .rtl .options-grid { padding-left: 0; padding-right: 25px; }
-        .rtl .tf-container { padding-left: 0; padding-right: 25px; }
-        .rtl .sa-lines { padding-left: 0; padding-right: 25px; border-left: none; border-right: 2px solid #cbd5e0; }
+        .rtl .choices-inline { padding-left: 0; padding-right: 20px; flex-direction: row; }
+        .rtl .tf-container { padding-left: 0; padding-right: 20px; }
+        .rtl .sa-lines { padding-left: 0; padding-right: 20px; border-left: none; border-right: 1px solid #cbd5e0; }
+        .rtl .btn-delete { margin-left: 0; margin-right: auto; }
 
-        /* --- PRINT MEDIA SYSTEM --- */
+        /* --- PRINT OVERRIDES --- */
         @media print {
             body { background: transparent; padding: 0; color: #000; }
             .admin-panel, button, .btn-delete { display: none !important; }
@@ -146,7 +150,7 @@
 
     <!-- Builder Setup Controls -->
     <div class="admin-panel">
-        <h2>🛠️ Exam Template Controls</h2>
+        <h2>🛠️ Exam Template Controls (Compact Mode)</h2>
         
         <div class="control-group">
             <div class="lang-switch">
@@ -156,14 +160,14 @@
         </div>
 
         <div class="control-group">
-            <button class="btn-add" onclick="addQuestion('mcq')">➕ Multiple Choice</button>
+            <button class="btn-add" onclick="addQuestion('mcq')">➕ Multiple Choice (Inline)</button>
             <button class="btn-add" onclick="addQuestion('blank')">✏️ Fill in Blanks</button>
             <button class="btn-add" onclick="addQuestion('tf')">✔️ True / False</button>
             <button class="btn-add" onclick="addQuestion('short')">📝 Short Answer</button>
         </div>
 
-        <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-            <button class="btn-print" onclick="window.print()">🖨️ Generate & Save Paper (PDF)</button>
+        <div style="margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
+            <button class="btn-print" style="background-color: var(--success); color: white;" onclick="window.print()">🖨️ Generate & Save Paper (PDF)</button>
         </div>
     </div>
 
@@ -192,7 +196,6 @@
 <script>
     let qCount = 0;
 
-    // Changes layout structure between English Left-to-Right and Kurdish Right-to-Left directions
     function setLanguage(mode) {
         const sheet = document.getElementById('examSheet');
         document.getElementById('btn-en').classList.remove('active');
@@ -209,7 +212,6 @@
         }
     }
 
-    // Handles generation of different structural input templates 
     function addQuestion(type) {
         qCount++;
         const container = document.getElementById('questionsContainer');
@@ -218,13 +220,15 @@
         qBlock.className = 'q-block';
         qBlock.id = 'q-' + qCount;
 
-        // Base structural header row containing numeric sequence indicators and actions
         let innerHTML = `
             <div class="q-row">
                 <span class="q-num class-index-label"></span>
-                <input type="text" class="paper-input" style="font-weight: bold;" placeholder="Click here to type question text...">
+                <input type="text" class="paper-input" style="font-weight: bold;" placeholder="Type question text here...">
                 <button class="btn-delete" onclick="deleteQuestion('${qBlock.id}')">Delete</button>
             </div>
         `;
 
-        // Inject configuration blocks specific to selection data model
+        if (type === 'mcq') {
+            innerHTML += `
+                <div class="choices-inline">
+                    <div class="choice-item">A) <input type="text" class="paper-input choice-input" placeholder="Option A"></div>
