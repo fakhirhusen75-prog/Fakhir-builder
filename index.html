@@ -3,232 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compact Question Paper Generator</title>
+    <title>KRG Exam Paper Generator Clone</title>
     <style>
         /* --- CORE CONFIG & RESET --- */
-        :root {
-            --primary: #2b6cb0;
-            --primary-hover: #1a446c;
-            --success: #2f855a;
-            --danger: #e53e3e;
-            --bg-gray: #f7fafc;
-            --panel-bg: #ffffff;
-        }
-        * { box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
-        body { background-color: var(--bg-gray); margin: 0; padding: 10px; color: #2d3748; }
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background-color: #f0f4f8; margin: 0; padding: 10px; color: #333; }
 
-        /* --- CONTROL PANEL DESIGN --- */
-        .admin-panel {
-            max-width: 850px;
-            margin: 0 auto 10px auto;
-            background: var(--panel-bg);
-            padding: 12px;
+        /* --- TOP CONTROL PANEL CARD --- */
+        .config-card {
+            max-width: 500px;
+            margin: 0 auto 15px auto;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+        }
+        .project-credit {
+            background-color: #e6f6ff;
+            border: 1px solid #bae3ff;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--primary);
+            padding: 12px;
+            text-align: center;
+            color: #0066cc;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.4;
         }
-        .admin-panel h2 { margin: 0 0 8px 0; font-size: 16px; color: var(--primary); }
-        .control-group { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .form-row { margin-bottom: 12px; }
+        .form-row label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 13px; color: #4a5568; }
         
-        /* Buttons */
-        button {
-            padding: 6px 10px;
-            border: none;
-            border-radius: 4px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            background: #fff;
         }
-        .btn-add { background-color: #ebf8ff; color: var(--primary); border: 1px solid #bee3f8; }
-        .btn-add:hover { background-color: #e2e8f0; }
-        .btn-print { background-color: var(--success); color: white; }
-        .btn-delete { background-color: transparent; color: var(--danger); padding: 2px 6px; font-size: 11px; margin-left: auto; }
-        .btn-delete:hover { background-color: #fff5f5; border-radius: 3px; }
+        
+        /* Language and Action Button Layouts */
+        .flex-row { display: flex; gap: 8px; margin-bottom: 12px; }
+        .btn-lang { flex: 1; padding: 8px; border: 1px solid #cbd5e0; background: #fff; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 13px; }
+        .btn-lang.active { background: #3182ce; color: white; border-color: #3182ce; }
+        
+        .btn-save { flex: 1; background: #28a745; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-load { flex: 1; background: #fd7e14; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        
+        /* --- QUESTION TYPE PANEL --- */
+        .type-panel {
+            max-width: 500px;
+            margin: 0 auto 20px auto;
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            border: 1px solid #a0aec0;
+        }
+        .panel-title {
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #4a5568;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+        .type-buttons-stack { display: flex; flex-direction: column; gap: 8px; }
+        
+        /* Matching the color themes of buttons from the image */
+        .q-type-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: center;
+            transition: opacity 0.2s;
+        }
+        .q-type-btn:hover { opacity: 0.9; }
+        .btn-mcq    { background-color: #34495e; }
+        .btn-tf     { background-color: #1abc9c; }
+        .btn-blank  { background-color: #2980b9; }
+        .btn-match  { background-color: #9b59b6; }
+        .btn-define { background-color: #d35400; }
+        .btn-image  { background-color: #c0392b; }
+        .btn-diff   { background-color: #16a085; }
+        .btn-reason { background-color: #2c3e50; }
+        .btn-count  { background-color: #7f8c8d; }
+        .btn-map    { background-color: #2ecc71; }
+        .btn-open   { background-color: #9b59b6; }
+        .btn-format { background-color: #1abc9c; }
+        .btn-dict   { background-color: #2980b9; }
+        .btn-write  { background-color: #e74c3c; }
 
-        /* Lang Toggles */
-        .lang-switch { background: #edf2f7; padding: 3px; border-radius: 6px; display: inline-flex; }
-        .lang-btn { background: transparent; color: #4a5568; padding: 4px 8px; border-radius: 4px; }
-        .lang-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .btn-main-print {
+            width: 100%;
+            background-color: #f39c12;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
 
-        /* --- EXAM LAYOUT FRAME (COMPACT) --- */
+        /* --- EXAM SHEET FRAME --- */
         .exam-sheet {
             max-width: 850px;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid #cbd5e0;
+            padding: 25px;
+            border: 1px solid #000;
             min-height: 1000px;
         }
-        
-        /* Tight Exam Header Block */
         .exam-header {
             border: 1px solid #000;
-            padding: 8px;
-            margin-bottom: 12px;
+            padding: 10px;
+            margin-bottom: 15px;
         }
-        .header-top-title {
+        .header-title-centered {
             text-align: center;
             font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid #000;
+            font-size: 16px;
+            margin-bottom: 8px;
         }
-        .header-grid {
+        .header-inputs-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 6px;
         }
-        .header-field { font-size: 13px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
-        
-        /* Paper Inputs */
-        .paper-input {
-            border: none;
-            border-bottom: 1px dashed #cbd5e0;
-            outline: none;
+        .header-cell {
             font-size: 14px;
-            padding: 1px 2px;
-            width: 100%;
-            background: transparent;
-        }
-
-        /* --- ULTRA-TIGHT QUESTION BLOCKS --- */
-        .questions-container { margin-top: 10px; }
-        .q-block {
-            margin-bottom: 6px; /* Very narrow gap between questions */
-            padding: 2px 4px;
-            border-radius: 4px;
-            border: 1px solid transparent;
-        }
-        .q-block:hover { border-color: #edf2f7; background-color: #fafafa; }
-        .q-row { display: flex; align-items: center; gap: 6px; }
-        .q-num { font-weight: bold; font-size: 14px; min-width: 20px; }
-        
-        /* Horizontal Inline Choices System */
-        .choices-inline {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            gap: 15px; /* Spacing between option A, B, C, D */
-            padding-left: 20px;
-            margin-top: 2px;
-        }
-        .choice-item {
+            font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 3px;
-            font-size: 14px;
+            gap: 4px;
         }
-        .choice-input {
-            width: 110px; /* Clean compact length for option fields */
+        .paper-input {
+            border: none;
+            border-bottom: 1px dashed #777;
+            outline: none;
+            font-size: 14px;
+            width: 100%;
+            background: transparent;
+            padding: 1px;
+        }
+
+        /* --- COMPACT BLOCKS --- */
+        .questions-output { margin-top: 15px; }
+        .question-wrapper {
+            margin-bottom: 6px;
+            padding: 4px;
+            position: relative;
+        }
+        .question-base-row { display: flex; align-items: center; gap: 6px; }
+        .q-number-span { font-weight: bold; font-size: 14px; min-width: 22px; }
+        .action-delete-inline {
+            background: none; border: none; color: #e74c3c; font-size: 11px; cursor: pointer; font-weight: bold; margin-left: auto;
         }
         
-        .tf-container { display: flex; gap: 15px; padding-left: 20px; margin-top: 2px; font-size: 14px; }
-        .sa-lines { margin-top: 4px; padding-left: 20px; border-left: 1px solid #cbd5e0; height: 25px; }
+        /* Layout Configurations */
+        .mcq-inline-row { display: flex; flex-wrap: wrap; gap: 15px; padding-left: 25px; margin-top: 2px; font-size: 14px; }
+        .mcq-option-box { display: flex; align-items: center; gap: 3px; }
+        .mcq-input-field { width: 100px; }
+        
+        .tf-inline-row { display: flex; gap: 20px; padding-left: 25px; margin-top: 2px; font-size: 14px; }
+        .sa-compact-lines { height: 24px; border-left: 1px dashed #cbd5e0; margin: 4px 0 0 25px; }
 
-        /* --- RTL DIRECTION COUPLING --- */
+        /* --- RTL FORMAT MODIFIERS --- */
         .rtl { direction: rtl; text-align: right; }
-        .rtl .choices-inline { padding-left: 0; padding-right: 20px; flex-direction: row; }
-        .rtl .tf-container { padding-left: 0; padding-right: 20px; }
-        .rtl .sa-lines { padding-left: 0; padding-right: 20px; border-left: none; border-right: 1px solid #cbd5e0; }
-        .rtl .btn-delete { margin-left: 0; margin-right: auto; }
+        .rtl .mcq-inline-row { padding-left: 0; padding-right: 25px; }
+        .rtl .tf-inline-row { padding-left: 0; padding-right: 25px; }
+        .rtl .sa-compact-lines { border-left: none; border-right: 1px dashed #cbd5e0; margin-left: 0; margin-right: 25px; }
+        .rtl .action-delete-inline { margin-left: 0; margin-right: auto; }
 
-        /* --- PRINT OVERRIDES --- */
+        /* --- PRINT CSS OVERRIDES --- */
         @media print {
-            body { background: transparent; padding: 0; color: #000; }
-            .admin-panel, button, .btn-delete { display: none !important; }
-            .exam-sheet { box-shadow: none; border: none; padding: 0; max-width: 100%; }
+            body { background: transparent; padding: 0; }
+            .config-card, .type-panel, .action-delete-inline { display: none !important; }
+            .exam-sheet { border: none; padding: 0; max-width: 100%; box-shadow: none; }
             .paper-input { border-bottom: none; }
-            .q-block:hover { background: transparent; }
             input::placeholder { color: transparent; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Builder Setup Controls -->
-    <div class="admin-panel">
-        <h2>🛠️ Exam Template Controls (Compact Mode)</h2>
+    <!-- Top Settings Card Layer -->
+    <div class="config-card">
+        <div class="project-credit">
+            🌸 This project is prepared to serve teachers and make it easier for them.
+        </div>
         
-        <div class="control-group">
-            <div class="lang-switch">
-                <button class="lang-btn active" id="btn-en" onclick="setLanguage('en')">English (LTR)</button>
-                <button class="lang-btn" id="btn-rtl" onclick="setLanguage('rtl')">Kurdish / کوردی (RTL)</button>
-            </div>
+        <div class="form-row">
+            <label>Font:</label>
+            <select id="fontSelect" onchange="changePaperFont(this.value)">
+                <option value="inherit">(KRG MOE) فۆنتی وەزارەتی پەروەردە</option>
+                <option value="'Times New Roman', serif">Times New Roman</option>
+                <option value="'Segoe UI', sans-serif">Standard Clear UI</option>
+            </select>
         </div>
 
-        <div class="control-group">
-            <button class="btn-add" onclick="addQuestion('mcq')">➕ Multiple Choice (Inline)</button>
-            <button class="btn-add" onclick="addQuestion('blank')">✏️ Fill in Blanks</button>
-            <button class="btn-add" onclick="addQuestion('tf')">✔️ True / False</button>
-            <button class="btn-add" onclick="addQuestion('short')">📝 Short Answer</button>
+        <div class="flex-row">
+            <button class="btn-lang" id="ln-ku" onclick="toggleDirection('rtl')">کوردی</button>
+            <button class="btn-lang" id="ln-ar" onclick="toggleDirection('rtl')">عەرەبی</button>
+            <button class="btn-lang active" id="ln-en" onclick="toggleDirection('ltr')">English</button>
         </div>
 
-        <div style="margin-top: 8px; border-top: 1px solid #e2e8f0; padding-top: 8px;">
-            <button class="btn-print" style="background-color: var(--success); color: white;" onclick="window.print()">🖨️ Generate & Save Paper (PDF)</button>
+        <div class="flex-row">
+            <button class="btn-save" onclick="saveExamData()">💾 Save</button>
+            <button class="btn-load" onclick="loadExamData()">📂 Load</button>
         </div>
     </div>
 
-    <!-- Live Paper View Container -->
-    <div class="exam-sheet" id="examSheet">
-        
-        <!-- Standard Exam Header Meta Structure -->
-        <div class="exam-header">
-            <div class="header-top-title" id="txt-header-title">In the Name of God / بسم الله الرحمن الرحيم</div>
-            <div class="header-grid">
-                <div class="header-field">School: <input type="text" class="paper-input" value="KRG Secondary School"></div>
-                <div class="header-field">Subject: <input type="text" class="paper-input" value="English Exam"></div>
-                <div class="header-field">Date: <input type="text" class="paper-input" placeholder="2026 / ___ / ___"></div>
-                <div class="header-field">Class / Stage: <input type="text" class="paper-input" value="Grade 10"></div>
-                <div class="header-field" style="grid-column: span 2;">Student Name: <input type="text" class="paper-input" placeholder="................................................................................"></div>
-                <div class="header-field">Time: <input type="text" class="paper-input" value="2 Hours"></div>
-                <div class="header-field">Mark / Grade: <input type="text" class="paper-input" placeholder="_______ / 50"></div>
-            </div>
-        </div>
-
-        <!-- Render Target for Injected Elements -->
-        <div class="questions-container" id="questionsContainer"></div>
-
-    </div>
-
-<script>
-    let qCount = 0;
-
-    function setLanguage(mode) {
-        const sheet = document.getElementById('examSheet');
-        document.getElementById('btn-en').classList.remove('active');
-        document.getElementById('btn-rtl').classList.remove('active');
-
-        if(mode === 'rtl') {
-            sheet.classList.add('rtl');
-            document.getElementById('btn-rtl').classList.add('active');
-            document.getElementById('txt-header-title').innerText = "بسم الله الرحمن الرحيم";
-        } else {
-            sheet.classList.remove('rtl');
-            document.getElementById('btn-en').classList.add('active');
-            document.getElementById('txt-header-title').innerText = "In the Name of God / بسم الله الرحمن الرحيم";
-        }
-    }
-
-    function addQuestion(type) {
-        qCount++;
-        const container = document.getElementById('questionsContainer');
-        
-        const qBlock = document.createElement('div');
-        qBlock.className = 'q-block';
-        qBlock.id = 'q-' + qCount;
-
-        let innerHTML = `
-            <div class="q-row">
-                <span class="q-num class-index-label"></span>
-                <input type="text" class="paper-input" style="font-weight: bold;" placeholder="Type question text here...">
-                <button class="btn-delete" onclick="deleteQuestion('${qBlock.id}')">Delete</button>
-            </div>
-        `;
-
-        if (type === 'mcq') {
-            innerHTML += `
-                <div class="choices-inline">
-                    <div class="choice-item">A) <input type="text" class="paper-input choice-input" placeholder="Option A"></div>
+    <!-- Centralized Input Stack Picker Tool -->
+    <div class="type-panel">
+        <div class="panel-title">Question Type:</div>
+        <div class="type-buttons-stack">
+            <button class="q-type-btn btn-mcq" onclick="addCustomQuestion('mcq')">١. MCQ</button>
+            <button class="q-type-btn btn-tf" onclick="addCustomQuestion('tf')">٢. T/F</button>
+            <button class="q-type-btn btn-blank" onclick="addCustomQuestion('blank')">٣. Blank</button>
+            <button class="q-type-btn btn-match" onclick="addCustomQuestion('match')">٤. Match</button>
+            <button class="q-type-btn btn-define" onclick="addCustomQuestion('define')">٥. Define</button>
+            <button class="q-type-btn btn-image" onclick="addCustomQuestion('image')">٦. Image</button>
+            <button class="q-type-btn btn-diff" onclick="addCustomQuestion('diff')">٧. Diff</button>
+            <button class="q-type-btn btn-reason" onclick="addCustomQuestion('reason')">٨. Reasons</button>
+            <button class="q-type-btn btn-count" onclick="addCustomQuestion('count')">٩. Count</button>
+            <button class="q-type-btn btn-map" onclick="addCustomQuestion('map')">١٠. Map</button>
